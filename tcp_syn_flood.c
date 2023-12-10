@@ -207,7 +207,7 @@ void attack(void *args)
 
     char packet[MAX_PACKET_SIZE];
     struct iphdr *iph = (struct iphdr *)packet;
-    struct tcphdr *tcph = (void *)iph + sizeof(struct iphdr);
+    struct tcphdr *tcph = (struct tcphdr *)packet + sizeof(struct iphdr);
     struct sockaddr_in sin;
     memset(&sin, 0, sizeof(struct sockaddr_in));
     sin = arg->sin;
